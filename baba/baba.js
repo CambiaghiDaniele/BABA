@@ -27,7 +27,7 @@ function resizeCanvas() {
 let lastMessageTime = 0;
 const messageInterval = 100; // Intervallo di tempo in millisecondi
 
-const socket = new WebSocket('ws://localhost:12345/baba');
+const socket = new WebSocket('ws://cambiaghi.daniele.tave.osdb.it:12345/baba');
 
 socket.onopen = function (event) {
     console.log('WebSocket connection opened:', event);
