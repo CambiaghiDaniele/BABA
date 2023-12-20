@@ -3,19 +3,19 @@ package Game;
 import java.util.Vector;
 
 public class Map {
-    public final int width = 10000;
-    public final int height = 10000;
+    public final int width = 50000;
+    public final int height = 50000;
     private Chunk[][] chunks;
 
     public Map() {
-        chunks = new Chunk[width / 100][height / 100];
+        chunks = new Chunk[width / 1000][height / 1000];
         generateChunks();
     }
 
     private void generateChunks(){
-        for(int y = 0; y < height / 100; y++){
-            for(int x = 0; x < width / 100; x++){
-                chunks[x][y] = new Chunk(x * 100, y * 100);
+        for(int y = 0; y < height / 1000; y++){
+            for(int x = 0; x < width / 1000; x++){
+                chunks[x][y] = new Chunk(x * 1000, y * 1000);
             }
         }
     }

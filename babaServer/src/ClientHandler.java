@@ -2,66 +2,28 @@ import Game.Chunk;
 import Game.Player;
 import Utility.JSONBuilder;
 
-import java.io.*;
-import java.net.Socket;
+import javax.websocket.OnMessage;
+import javax.websocket.Session;
 
 public class ClientHandler implements Runnable {
-
-    private Socket clientSocket;
-    private BufferedReader reader;
-    private PrintWriter writer;
     private Player player;
 
-    public ClientHandler(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-        try {
-            // Inizializza gli stream di input e output
-            InputStream inputStream = clientSocket.getInputStream();
-            OutputStream outputStream = clientSocket.getOutputStream();
-
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-            writer = new PrintWriter(outputStream, true); // true abilita l'autoflush
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        player = new Player((int)(Math.random()*10000), (int)(Math.random()*10000), "Name");
+    public ClientHandler() {
+        player = new Player((int)(Math.random()*Server.map.width), (int)(Math.random()*Server.map.height), "Name");
     }
 
     @Override
     public void run() {
+        sendUpdates();
         try {
-            // Avvia un thread per la ricezione dei messaggi dal client
-            Thread receiveThread = new Thread(this::receiveMessages);
-            receiveThread.start();
-
-            // Avvia un thread per l'invio di aggiornamenti al client
-            Thread sendThread = new Thread(this::sendUpdates);
-            sendThread.start();
-
-            // Attendi che entrambi i thread terminino prima di chiudere la connessione
-            receiveThread.join();
-            sendThread.join();
-
+            Thread.sleep(100);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            // Chiudi la connessione quando i thread terminano
-            try {
-                clientSocket.close();
-                System.out.println("Connessione chiusa con " + clientSocket.getInetAddress());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            throw new RuntimeException(e);
         }
     }
-    private void receiveMessages() {
-        try {
-            while (true) {
-                messageActions(reader.readLine());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @OnMessage
+    private void receiveMessages(String message, Session session) {
+        messageActions(message);
     }
     private void messageActions(String message){
         String action = message.split(",")[0];
@@ -76,24 +38,24 @@ public class ClientHandler implements Runnable {
         boolean moveY = Boolean.parseBoolean(movement2.substring(movement2.indexOf(":")));
         player.move(moveX, moveY);
     }
-
     private void sendUpdates() {
-        try {
-            while (true) {
-                writer.println(JSONBuilder.buildJSON(getChunksNearby()));
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        JSONBuilder.buildJSON(getChunksNearby());
     }
     private Chunk[][] getChunksNearby(){
         Chunk[][] chunks = new Chunk[9][5];
         for(int y=-2; y <= 2; y++){
             for(int x=-4; x <= 4; x++){
-                chunks[x][y] = Server.map.getChunk(player.getChunkX()+x, player.getChunkY()+y);
+                chunks[x][y] = coordinateAdjustment(Server.map.getChunk(player.getChunkX()+x, player.getChunkY()+y));
             }
         }
         return chunks;
+    }
+    private Chunk coordinateAdjustment(Chunk chunk){
+        if(chunk.chunkX!= player.getChunkX()&&chunk.chunkY!= player.getChunkY()) {
+            for (int i = 0; i < chunk.getPlayers().size(); i++) {
+
+            }
+        }
+        return chunk;
     }
 }

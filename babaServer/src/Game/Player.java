@@ -12,9 +12,9 @@ public class Player {
         this.posX = posX;
         this.posY = posY;
         this.playerName = playerName;
-        size = 50;
-        chunkX = (int)(posX/100);
-        chunkY = (int)(posY/100);
+        size = 250;
+        chunkX = (int)(posX/1000);
+        chunkY = (int)(posY/1000);
     }
 
     public int getPosX() {

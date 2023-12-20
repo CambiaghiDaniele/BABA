@@ -3,16 +3,16 @@ package Game;
 import java.util.Vector;
 
 public class Chunk {
-    public int starterX;
-    public int starterY;
+    public final int chunkX;
+    public final int chunkY;
     public final int width = 1000;
     public final int height = 1000;
     private Vector<Player> players;
     private Vector<Point> points;
 
     public Chunk(int starterX, int starterY) {
-        this.starterX = starterX;
-        this.starterY = starterY;
+        this.chunkX = starterX/1000;
+        this.chunkY = starterY/1000;
         players = new Vector<>();
         points = new Vector<>();
     }
